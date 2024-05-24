@@ -2,7 +2,7 @@
 # Project Discription:
 Semester : Second Semester of 2023/2024
 # Group
-Group name:
+Group name: B8
 Course Code: ITNE352
 Section: 02
 Student names: 
