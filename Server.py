@@ -2,6 +2,7 @@ import socket
 import threading
 import requests
 import json
+import Menu
 
 # Configuration
 HOST = '127.0.0.1'
@@ -12,19 +13,22 @@ API_KEY = 'd4be61055cd64fc09926fdf2f31370fe'
 BASE_URL = 'https://newsapi.org/v2/'
 
 # Function to fetch news from NewsAPI
-def fetch_news(endpoint, params , client_name , option):
+def fetch_news(endpoint, params):
     url = f"{BASE_URL}{endpoint}"
     params['apiKey'] = API_KEY
     response = requests.get(url, params=params)
-    data = response.json()
 
-    # Limit the number of results to 15
-    limited_data = data['articles'][:15]
+    if response.status_code == 200:
+        try:
+            data = response.json()
+            return data
+        except json.JSONDecodeError as e:
+            print(f"Error decoding JSON: {e}")
+            return None
+    else:
+        print(f"Failed to fetch news. Status code: {response.status_code}")
+        return None
 
-    # Save the limited data to a JSON file
-    filename = f"B8_{client_name}_{option}.json"
-    with open(filename, 'w') as f:
-        json.dump(limited_data, f)
 
 # Function to handle client connection
 def handle_client(conn, addr):
@@ -43,9 +47,9 @@ def handle_client(conn, addr):
 
                 option, params = json.loads(request)
                 if option == 'headlines':
-                    data = fetch_news('top-headlines', params , client_name , option)
+                    data = Menu.headline('top-headlines', params, conn, client_name, option)
                 elif option == 'sources':
-                    data = fetch_news('sources', params, client_name , option)
+                    data = Menu.headline('sources', params, conn, client_name, option)
                 else:
                     data = {'error': 'Invalid option'}
 
