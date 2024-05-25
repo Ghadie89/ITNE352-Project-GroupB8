@@ -91,6 +91,11 @@ def handle_sources(client_socket):
     data = json.loads(response)
     print(json.dumps(data, indent=4))
 
+    article = int(input("Input article number: "))
+    client_socket.send(article.encode('ascii'))
+    print(client_socket.recv(4096).decode())
+
+
 
 # Main client function
 def start_client():
@@ -113,6 +118,8 @@ def start_client():
             else:
                 print("Invalid choice. Please try again.")
 
+
+
         client_socket.close()
     except ConnectionRefusedError:
         print("Failed to connect to the server. Ensure the server is running and reachable.")
@@ -122,5 +129,5 @@ def start_client():
         print(f"An error occurred: {e}")
 
 
-if __name__ == "__main__":
-    start_client()
+if _name_ == "_main_":
+    start_client()
