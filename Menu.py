@@ -1,20 +1,13 @@
 import requests
 import json
+import SERver
 
 API_KEY = 'd4be61055cd64fc09926fdf2f31370fe'
-
-def fetch_news(option):
-    url = f'https://newsapi.org/v2/top-headlines?country={option}&apiKey={API_KEY}'
-    response = requests.get(url)
-    if response.status_code == 200:
-        return response.json()
-    else:
-        return None
-
-def HM_Search_for_Keywords(keyword, client_socket):
-    news_data = fetch_news(keyword)
+def headline(endpoint, param, client_socket, client_name, option):
+    news_data = SERver.fetch_news(endpoint, param)
     if news_data and 'articles' in news_data:
         articles = news_data['articles']
+        # Limit the number of results to 15
         for i, article in enumerate(articles, start=1):
             source_name = article['source']['name']
             author = article['author']
@@ -27,7 +20,10 @@ def HM_Search_for_Keywords(keyword, client_socket):
         if 1 <= choice <= len(articles):
             chosen_article = articles[choice - 1]
             # Assuming 'save_article_to_json' function is defined in 'Server.py'
-            save_article_to_json(chosen_article) # Save the article in a Json
+            # Save the limited data to a JSON file
+            json_filename = f"B8_{client_name}_{option}.json"
+            with open(json_filename, 'w') as json_file:
+                json.dump(news_data, json_file)
 
             # Display chosen article content to the client
             chosen_article_content = f"\nChosen article content:\n"
