@@ -3,7 +3,7 @@ import json
 
 # Configuration
 HOST = '127.0.0.1'  # Server's IP address
-PORT = 8000
+PORT = 8001
 
 
 # Function to display menus and handle user input
