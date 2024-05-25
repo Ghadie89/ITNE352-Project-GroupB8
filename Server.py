@@ -3,9 +3,10 @@ import threading
 import requests
 import json
 
+
 # Configuration
 HOST = '127.0.0.1'
-PORT = 8000
+PORT = 8001
 clients = []  # Changed from Client to clients
 MAX_CONNECTIONS = 5
 API_KEY = 'd4be61055cd64fc09926fdf2f31370fe'
@@ -48,7 +49,7 @@ def handle_client(conn, addr):
                 else:
                     data = {'error': 'Invalid option'}
 
-                filename = f"group_ID_{client_name}_{option}.json"
+                filename = f"B8_{client_name}_{option}.json"
                 with open(filename, 'w') as f:
                     json.dump(data, f)
 
@@ -69,6 +70,7 @@ def handle_client(conn, addr):
 # Main server function
 def main():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server.bind((HOST, PORT))
     server.listen(MAX_CONNECTIONS)
 
