@@ -1,12 +1,10 @@
 import socket
 import json
+import Nserver
 
-# Configuration
-HOST = '127.0.0.1'  # Server's IP address
+HOST = '127.0.0.1'
 PORT = 8001
 
-
-# Function to display menus and handle user input
 def display_menu():
     print("Main Menu:")
     print("1. Search headlines")
@@ -28,14 +26,7 @@ def handle_headlines(client_socket):
     if choice == '1':
         params['q'] = input("Enter keyword: ")
     elif choice == '2':
-        print("Categories: \n"
-              "1. Business \n"
-              "2. Entertainment \n"
-              "3. General \n"
-              "4. Health \n"
-              "5. Science \n"
-              "6. Sports \n"
-              "7. Technology \n")
+        print("Categories:\n1. Business\n2. Entertainment\n3. General\n4. Health\n5. Science\n6. Sports\n7. Technology")
         category_choice = input("Enter category number: ")
         categories = {
             '1': 'business',
@@ -46,9 +37,22 @@ def handle_headlines(client_socket):
             '6': 'sports',
             '7': 'technology'
         }
-        params['category'] = categories.get(category_choice, 'general')
+        params['category'] = categories.get(category_choice)
     elif choice == '3':
-        params['country'] = input("Enter country: ")
+        print("Countries: \n 1. au \n 2. nz \n 3. ca \n 4. ae \n 5. sa \n 6. gb \n 7. us \n 8. eg \n 9. ma \n")
+        country_choice = input("Enter country number: ")
+        countries = {
+            '1': 'au',
+            '2': 'nz',
+            '3': 'ca',
+            '4': 'ae',
+            '5': 'sa',
+            '6': 'gb',
+            '7': 'us',
+            '8': 'eg',
+            '9': 'ma'
+        }
+        params['country'] = countries.get(country_choice)
     elif choice == '4':
         pass
     elif choice == '5':
@@ -58,18 +62,21 @@ def handle_headlines(client_socket):
     client_socket.send(request.encode('ascii'))
     response = client_socket.recv(4096).decode('ascii')
 
-    print("Debug: Received response:", response)  # Add this line for debugging
+    print("Received response:", response)
 
     try:
         data = json.loads(response)
-        print(json.dumps(data, indent=4))
+        if isinstance(data, list):
+            for article in data:
+                print(json.dumps(article, indent=4))
+        else:
+            print(data)
     except json.JSONDecodeError as e:
         print(f"An error occurred: {e}")
 
-    article = input("Input article number: ")
-    client_socket.send(article.encode('ascii'))
+    article_choice = input("Input article number: ")
+    client_socket.send(article_choice.encode('ascii'))
     print(client_socket.recv(4096).decode('ascii'))
-
 
 def handle_sources(client_socket):
     print("Sources Menu:")
@@ -82,15 +89,7 @@ def handle_sources(client_socket):
 
     params = {}
     if choice == '1':
-        print("Categories: \n"
-             "1. Business \n"
-             "2. Entertainment \n"
-             "3. General \n"
-             "4. Health \n"
-             "5. Science \n"
-             "6. Sports \n"
-             "7. Technology \n")
-
+        print("Categories:\n1. Business\n2. Entertainment\n3. General\n4. Health\n5. Science\n6. Sports\n7. Technology")
         category_choice = input("Enter category number: ")
         categories = {
             '1': 'business',
@@ -115,19 +114,21 @@ def handle_sources(client_socket):
     client_socket.send(request.encode('ascii'))
     response = client_socket.recv(4096).decode('ascii')
 
-    print("Received response:", response)  # Add this line for debugging
+    print("Received response:", response)  # Debugging line
 
     try:
         data = json.loads(response)
-        print(json.dumps(data, indent=4))
+        if isinstance(data, list):
+            for source in data:
+                print(json.dumps(source, indent=4))
+        else:
+            print(data)
     except json.JSONDecodeError as e:
         print(f"An error occurred: {e}")
 
-
-    article = input("Input article number: ")
-    client_socket.send(article.encode('ascii'))
+    article_choice = input("Input article number: ")
+    client_socket.send(article_choice.encode('ascii'))
     print(client_socket.recv(4096).decode('ascii'))
-
 
 # Main client function
 def start_client():
@@ -158,6 +159,6 @@ def start_client():
     except Exception as e:
         print(f"An error occurred: {e}")
 
-
 if __name__ == "__main__":
     start_client()
+
