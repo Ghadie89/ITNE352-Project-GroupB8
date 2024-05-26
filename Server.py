@@ -2,7 +2,7 @@ import socket
 import threading
 import requests
 import json
-import Menu
+import Nmenu
 
 # Configuration
 HOST = '127.0.0.1'
@@ -10,7 +10,7 @@ PORT = 8001
 clients = []
 MAX_CONNECTIONS = 5
 API_KEY = 'd4be61055cd64fc09926fdf2f31370fe'
-BASE_URL = 'https://newsapi.org/v2/'
+BASE_URL = 'https://newsapi.org/v2/top-headlines'
 
 # Function to fetch news from NewsAPI
 def fetch_news(endpoint, params):
@@ -41,20 +41,20 @@ def handle_client(conn, addr):
     try:
         while True:
             try:
-                request = conn.recv(1024).decode()
+                request = conn.recv(1024).decode('ascii')
                 if not request:
                     break
 
                 option, params = json.loads(request)
                 if option == 'headlines':
-                    data = Menu.headline('top-headlines', params, conn, client_name, option)
+                    data = fetch_news('top-headlines', params)
                 elif option == 'sources':
-                    data = Menu.headline('sources', params, conn, client_name, option)
+                    data = fetch_news('sources', params)
                 else:
                     data = {'error': 'Invalid option'}
 
-                response = json.dumps(data)
-                conn.send(response.encode())
+                response = json.dumps(data if data else {'error': 'No data found'})
+                conn.send(response.encode('ascii'))
             except Exception as e:
                 print(f"Error handling request from {addr}: {e}")
                 break
