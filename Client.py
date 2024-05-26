@@ -36,7 +36,17 @@ def handle_headlines(client_socket):
               "5. Science \n"
               "6. Sports \n"
               "7. Technology \n")
-        params['category'] = input("Enter category: ")
+        category_choice = input("Enter category number: ")
+        categories = {
+            '1': 'business',
+            '2': 'entertainment',
+            '3': 'general',
+            '4': 'health',
+            '5': 'science',
+            '6': 'sports',
+            '7': 'technology'
+        }
+        params['category'] = categories.get(category_choice, 'general')
     elif choice == '3':
         params['country'] = input("Enter country: ")
     elif choice == '4':
@@ -45,14 +55,20 @@ def handle_headlines(client_socket):
         return
 
     request = json.dumps(('headlines', params))
-    client_socket.send(request.encode())
-    response = client_socket.recv(4096).decode()
-    data = json.loads(response)
-    print(json.dumps(data, indent=4))
+    client_socket.send(request.encode('ascii'))
+    response = client_socket.recv(4096).decode('ascii')
 
-    response = client_socket.recv(4096).decode()  # Receive response
-    print("Received response:", response)
-    data = json.loads(response)  # Decode JSON
+    print("Debug: Received response:", response)  # Add this line for debugging
+
+    try:
+        data = json.loads(response)
+        print(json.dumps(data, indent=4))
+    except json.JSONDecodeError as e:
+        print(f"An error occurred: {e}")
+
+    article = input("Input article number: ")
+    client_socket.send(article.encode('ascii'))
+    print(client_socket.recv(4096).decode('ascii'))
 
 
 def handle_sources(client_socket):
@@ -75,7 +91,17 @@ def handle_sources(client_socket):
              "6. Sports \n"
              "7. Technology \n")
 
-        params['category'] = input("Enter category: ")
+        category_choice = input("Enter category number: ")
+        categories = {
+            '1': 'business',
+            '2': 'entertainment',
+            '3': 'general',
+            '4': 'health',
+            '5': 'science',
+            '6': 'sports',
+            '7': 'technology'
+        }
+        params['category'] = categories.get(category_choice, 'general')
     elif choice == '2':
         params['country'] = input("Enter country: ")
     elif choice == '3':
@@ -86,15 +112,21 @@ def handle_sources(client_socket):
         return
 
     request = json.dumps(('sources', params))
-    client_socket.send(request.encode())
-    response = client_socket.recv(4096).decode()  # Increase buffer size if needed
-    data = json.loads(response)
-    print(json.dumps(data, indent=4))
+    client_socket.send(request.encode('ascii'))
+    response = client_socket.recv(4096).decode('ascii')
 
-    article = int(input("Input article number: "))
+    print("Received response:", response)  # Add this line for debugging
+
+    try:
+        data = json.loads(response)
+        print(json.dumps(data, indent=4))
+    except json.JSONDecodeError as e:
+        print(f"An error occurred: {e}")
+
+
+    article = input("Input article number: ")
     client_socket.send(article.encode('ascii'))
-    print(client_socket.recv(4096).decode())
-
+    print(client_socket.recv(4096).decode('ascii'))
 
 
 # Main client function
@@ -104,7 +136,7 @@ def start_client():
         client_socket.connect((HOST, PORT))
 
         client_name = input("Enter your name: ")
-        client_socket.send(client_name.encode())
+        client_socket.send(client_name.encode('ascii'))
 
         while True:
             choice = display_menu()
@@ -118,8 +150,6 @@ def start_client():
             else:
                 print("Invalid choice. Please try again.")
 
-
-
         client_socket.close()
     except ConnectionRefusedError:
         print("Failed to connect to the server. Ensure the server is running and reachable.")
@@ -129,5 +159,5 @@ def start_client():
         print(f"An error occurred: {e}")
 
 
-if _name_ == "_main_":
-    start_client()
+if __name__ == "__main__":
+    start_client()
