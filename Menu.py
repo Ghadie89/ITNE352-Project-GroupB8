@@ -1,10 +1,10 @@
 import requests
 import json
-import SERver
+import Nserver
 
 API_KEY = 'd4be61055cd64fc09926fdf2f31370fe'
 def headline(endpoint, param, client_socket, client_name, option):
-    news_data = SERver.fetch_news(endpoint, param)
+    news_data = Nserver.fetch_news(endpoint, param)
     if news_data and 'articles' in news_data:
         articles = news_data['articles']
         # Limit the number of results to 15
@@ -13,9 +13,9 @@ def headline(endpoint, param, client_socket, client_name, option):
             author = article['author']
             title = article['title']
             article_info = f"{i}. Source: {source_name}, Author: {author}, Title: {title}\n"
-            client_socket.sendall(article_info.encode())  # Send article information to client
-
-        choice = int(client_socket.recv(1024).decode())  # Receive the client's choice
+            client_socket.sendall(article_info.encode('ascii'))  # Send article information to client
+        client_socket.sendall(b"Input article number: ")
+        choice = int(client_socket.recv(1024).decode('ascii'))  # Receive the client's choice
 
         if 1 <= choice <= len(articles):
             chosen_article = articles[choice - 1]
@@ -39,6 +39,6 @@ def headline(endpoint, param, client_socket, client_name, option):
             client_socket.sendall(chosen_article_content.encode('ascii'))
 
         else:
-            print("Invalid choice.")
+            client_socket.sendall(b"Invalid choice.")
     else:
-        print("No articles found.")
+        client_socket.sendall(b"No articles found.")
