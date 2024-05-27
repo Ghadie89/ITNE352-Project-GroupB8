@@ -78,6 +78,28 @@ if __name__ == "__main__":
     start_client()
 
 ### Additional Concept
+## Authentication:
+Making ensuring that only users who have registered may access the server's services is the aim of the authentication system. Users have the option of creating a new account or logging in using an already-existing one. This gives the communication an extra degree of protection and customization.
+
+By entering their username and password, new users may register and establish an account.
+User Login: enables current users to access their account by entering their password and username.
+User Data Storage: On the server, a JSON file containing user credentials is kept.
+Modifications Made
+
+Currently, the server is waiting on an authentication request ('R' for register or 'L' for login) before allowing more requests to be made.
+The user can access the menu choices for obtaining sources or headlines once they have successfully authenticated with the server.
+User Prompted for Authentication on the Client Side:
+
+The user is prompted by the client to select whether to create a new account or utilize an already-existing one.
+It gathers the password and username, then transmits these information to the server.
+Handling Server Responses:
+
+The server sends the authentication result to the client, which displays it. Should authentication fail, the user is prompted to attempt again.
+
+
+
+
+
 ### Acknowledgment
 ### Conclusion
 ### Resources
