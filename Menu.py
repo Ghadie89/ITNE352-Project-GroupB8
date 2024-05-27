@@ -23,11 +23,10 @@ def fetch_news(endpoint, params):
                 logging.info("Retrying...")
     return None
 
-
-def headline(endpoint, param, client_socket):
+def headline(endpoint, param, client_socket,option,client_name):
     news_data = fetch_news(endpoint, param)
     if news_data and 'articles' in news_data:
-        articles = news_data['articles'][:15]  # Limiting to 15 articles
+        articles = news_data['articles'][:15]
         extracted_data = []
 
         # Add a search information entry before the articles
@@ -48,8 +47,27 @@ def headline(endpoint, param, client_socket):
             extracted_data.append({'source': source_name, 'author': author, 'title': title})
             client_socket.sendall(article_info.encode())
 
+        file_path = f"B8_{client_name}_{option}.json"
+        if os.path.exists(file_path):
+            try:
+                with open(file_path, 'r') as json_file:
+                    existing_data = json.load(json_file)
+            except Exception as e:
+                existing_data = []
+        else:
+            existing_data = []
+
+        # Append new articles to the existing data
+        existing_data.extend(extracted_data)
+
+        # Save the updated data back to the JSON file
+        try:
+            with open(file_path, 'w') as json_file:
+                json.dump(existing_data, json_file, indent=4, separators=(',', ': '))
+        except Exception as e:
+            pass
         while True:
-            client_socket.sendall(b"\nInput article number: ")
+            client_socket.sendall(b"\nInput article number ")
             choice = client_socket.recv(1024).decode()
             if not choice.isdigit():
                 client_socket.sendall(b"Invalid choice. Please enter a valid number.")
@@ -64,7 +82,7 @@ def headline(endpoint, param, client_socket):
                     f"Author: {chosen_article.get('author', 'Unknown')}\n"
                     f"Title: {chosen_article['title']}\n"
                     f"URL: {chosen_article['url']}\n"
-                    f"Description: {chosen_article['description']}\n"
+                    f"Description: {chosen_article.get('description', 'No description available')}\n"
                     f"Publish Date: {chosen_article['publishedAt'][:10]}\n"
                     f"Publish Time: {chosen_article['publishedAt'][11:19]}\n"
                 )
@@ -74,4 +92,3 @@ def headline(endpoint, param, client_socket):
                 client_socket.sendall(b"Invalid choice. Please enter a number between 1 and 15.")
     else:
         client_socket.sendall(b"No articles found.")
-
