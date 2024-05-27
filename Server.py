@@ -3,7 +3,7 @@ import threading
 import json
 import logging
 import Nmenu
-
+import os
 # Configuration
 HOST = '127.0.0.1'
 PORT = 8001
@@ -13,11 +13,51 @@ MAX_CONNECTIONS = 5
 logging.basicConfig(level=logging.INFO)
 
 clients = []
+users_db = "users.json"
+def load_users():
+    if os.path.exists(users_db):
+        with open(users_db, 'r') as file:
+            return json.load(file)
+    return {}
+def save_users(users):
+    with open(users_db, 'w') as file:
+        json.dump(users, file, indent=4)
+
+def register_user(username, password):
+    users = load_users()
+    if username in users:
+        return False, "Username already exists."
+    users[username] = password
+    save_users(users)
+    return True, "Registration successful."
+
+def authenticate_user(username, password):
+    users = load_users()
+    if username in users and users[username] == password:
+        return True, "Login successful."
+    return False, "Invalid username or password."
 
 # Function to handle client connection
 def handle_client(conn, addr):
     logging.info(f"New connection from {addr}")
     try:
+        while True:
+            auth_choice = conn.recv(1024).decode()
+            username = conn.recv(1024).decode()
+            password = conn.recv(1024).decode()
+
+            if auth_choice == 'R':
+                success, message = register_user(username, password)
+            elif auth_choice == 'L':
+                success, message = authenticate_user(username, password)
+            else:
+                success, message = False, "Invalid authentication choice."
+
+            conn.send(message.encode())
+
+            if success:
+                break
+
         client_name = conn.recv(1024).decode()
         logging.info(f"Client name: {client_name}")
         while True:
@@ -28,7 +68,7 @@ def handle_client(conn, addr):
             if option == 'headlines':
                 Nmenu.headline('top-headlines', params, conn,option,client_name)
             elif option == 'sources':
-                Nmenu.source('sources', params, conn)
+                Nmenu.sources('sources', params, conn,option,client_name)
             else:
                 response = json.dumps({'error': 'Invalid option'})
                 conn.send(response.encode())
