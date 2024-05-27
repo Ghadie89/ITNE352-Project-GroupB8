@@ -15,39 +15,45 @@ def display_menu():
 
 
 def handle_headlines(client_socket):
-    print("Headlines Menu:\n1. Search for keywords\n2. Search by category\n3. Search by country\n4. List all new headlines\n5. Back to the main menu")
-    choice = input("Enter choice: ")
-    params = {}
-    if choice == '1':
-        params['q'] = input("Enter keyword: ")
-    elif choice == '2':
-        print('1-Business\n2-Entertainment\n3-General\n4-Health\n5-Science\n6-Sports\n7-Technology')
-        categories = {'1': 'business', '2': 'entertainment', '3': 'general', '4': 'health', '5': 'science', '6': 'sports', '7': 'technology'}
-        params['category'] = categories.get(input("Enter category number: "))
-    elif choice == '3':
-        print('1-au\n2-nz\n3-ca\n4-ae\n5-sa\n6-gb\n7-us\n8-eg\n9-ma')
-        countries = {'1': 'au', '2': 'nz', '3': 'ca', '4': 'ae', '5': 'sa', '6': 'gb', '7': 'us', '8': 'eg', '9': 'ma'}
-        params['country'] = countries.get(input("Enter country number: "))
-    elif choice == '5':
-        return
-    request = json.dumps(('headlines', params))
-    client_socket.send(request.encode())
-
     while True:
-        response = client_socket.recv(4096).decode()
-        print(response)
-        if "Input article number" in response:
-            while True:
-                article_choice = input("")
-                if article_choice.isdigit() and 1 <= int(article_choice) <= 15:
-                    client_socket.send(article_choice.encode())
-                    article_content = client_socket.recv(4096).decode()
-                    print(article_content)
-                    break
+        print("Headlines Menu:\n1. Search for keywords\n2. Search by category\n3. Search by country\n4. List all new headlines\n5. Back to the main menu")
+        choice = input("Enter choice: ")
+        params = {}
+        if choice == '1':
+            params['q'] = input("Enter keyword: ")
+        elif choice == '2':
+            print('1-Business\n2-Entertainment\n3-General\n4-Health\n5-Science\n6-Sports\n7-Technology')
+            categories = {'1': 'business', '2': 'entertainment', '3': 'general', '4': 'health', '5': 'science',
+                          '6': 'sports', '7': 'technology'}
+            params['category'] = categories.get(input("Enter category number: "))
+        elif choice == '3':
+            print('1-au\n2-nz\n3-ca\n4-ae\n5-sa\n6-gb\n7-us\n8-eg\n9-ma')
+            countries = {'1': 'au', '2': 'nz', '3': 'ca', '4': 'ae', '5': 'sa', '6': 'gb', '7': 'us', '8': 'eg', '9': 'ma'}
+            params['country'] = countries.get(input("Enter country number: "))
+        elif choice == '4':
+            pass
+        elif choice == '5':
+            return
 
-                if "Invalid article number" in response:
+        request = json.dumps(('headlines', params))
+        client_socket.send(request.encode())
+
+        while True:
+            response = client_socket.recv(4096).decode()
+            print(response)
+            if "Input article number" in response:
+                while True:
                     article_choice = input("")
-                    client_socket.send(article_choice.encode())
+                    if article_choice.isdigit() and 1 <= int(article_choice) <= 15:
+                        client_socket.send(article_choice.encode())
+                        article_content = client_socket.recv(4096).decode()
+                        print(article_content)
+                        break
+
+                    if "Invalid article number" in response:
+                        article_choice = input("")
+                        client_socket.send(article_choice.encode())
+
 
 def handle_sources(client_socket):
     print("Sources Menu:")
@@ -94,17 +100,32 @@ def handle_sources(client_socket):
     try:
         data = json.loads(response)
         if isinstance(data, list):
-            for source in data:
-                print(json.dumps(source, indent=4))
+            for i, source_info in enumerate(data, start=1):
+                print(f"{i}. {source_info.get('name', '')}")
+
+            # Prompt the user to choose a source
+            while True:
+                source_choice = input("Input source number: ")
+                if source_choice.isdigit():
+                    source_choice = int(source_choice)
+                    if 1 <= source_choice <= len(data):
+                        break
+                print("Invalid choice. Please enter a valid number.")
+
+            # Send the chosen source number to the server
+            client_socket.send(str(source_choice).encode())
+
+            # Receive and print articles from the chosen source
+            article_response = client_socket.recv(4096).decode()
+            print(article_response)
+
         else:
             print(data)
     except json.JSONDecodeError as e:
         print(f"An error occurred: {e}")
 
-    article_choice = input()
-    client_socket.send(article_choice.encode())
-    print(client_socket.recv(4096).decode())
 
+# Main client function
 def start_client():
     try:
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -150,8 +171,8 @@ def start_client():
     except ConnectionResetError:
         print("Connection lost. The server may have closed the connection.")
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"An erroroccurred:{e}")
+
 
 if __name__ == "__main__":
     start_client()
-
