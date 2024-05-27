@@ -5,7 +5,7 @@ Semester : Second Semester of 2023/2024
 Group name: B8
 Course Code: ITNE352
 Section: 02
-Student names: 
+**Student names:** 
 1. Ghadeer Mohammed 202204965
 2. Fatema Ali 202208354
 
