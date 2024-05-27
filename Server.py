@@ -17,31 +17,27 @@ clients = []
 # Function to handle client connection
 def handle_client(conn, addr):
     logging.info(f"New connection from {addr}")
-    client_name = conn.recv(1024).decode()
-    clients.append((conn, client_name))
-    logging.info(f"Client name: {client_name}")
-
     try:
+        client_name = conn.recv(1024).decode()
+        logging.info(f"Client name: {client_name}")
         while True:
-            request = conn.recv(1024).decode('ascii')
+            request = conn.recv(1024).decode()
             if not request:
                 break
-
             option, params = json.loads(request)
             if option == 'headlines':
-                Nmenu.headline('top-headlines', params, conn, client_name, option)
-            elif option == 'sources':
-                Nmenu.headline('sources', params, conn, client_name, option)
+                Nmenu.headline('top-headlines', params, conn)
             else:
                 response = json.dumps({'error': 'Invalid option'})
-                conn.send(response.encode('ascii'))
+                conn.send(response.encode())
     except Exception as e:
         logging.error(f"Error handling request from {addr}: {e}")
+        response = json.dumps({'error': str(e)})
+        conn.send(response.encode())
     finally:
         logging.info(f"Connection closed with {addr}")
         conn.close()
-        clients.remove((conn, client_name))
-        logging.info(f"Connection with {client_name} closed.")
+
 
 # Main server function
 def main():
@@ -60,4 +56,3 @@ def main():
 # To Start the Server
 if __name__ == "__main__":
     main()
-
