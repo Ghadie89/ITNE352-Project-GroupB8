@@ -75,10 +75,13 @@ def handle_sources(client_socket):
         }
         params['category'] = categories.get(category_choice, 'general')
     elif choice == '2':
-
-        params['country'] = input("Enter country: ")
+        print('1-au\n2-nz\n3-ca\n4-ae\n5-sa\n6-gb\n7-us\n8-eg\n9-ma')
+        countries = {'1': 'au', '2': 'nz', '3': 'ca', '4': 'ae', '5': 'sa', '6': 'gb', '7': 'us', '8': 'eg', '9': 'ma'}
+        params['country'] = countries.get(input("Enter country number: "))
     elif choice == '3':
-        params['language'] = input("Enter language: ")
+        print('1-ar\n2-en')
+        language = {'1': 'ar', '2': 'en'}
+        params['language'] = (language.get(input("Enter language number: ")))
     elif choice == '4':
         pass
     elif choice == '5':
