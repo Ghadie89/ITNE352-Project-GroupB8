@@ -26,7 +26,9 @@ def handle_client(conn, addr):
                 break
             option, params = json.loads(request)
             if option == 'headlines':
-                Nmenu.headline('top-headlines', params, conn)
+                Nmenu.headline('top-headlines', params, conn,option,client_name)
+            elif option == 'sources':
+                Nmenu.source('sources', params, conn)
             else:
                 response = json.dumps({'error': 'Invalid option'})
                 conn.send(response.encode())
