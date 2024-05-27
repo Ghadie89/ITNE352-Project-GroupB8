@@ -40,3 +40,5 @@ Keep an eye on the output: Look for any error messages or signs that the server 
 # Acknowledgment
 # Conclusion
 # Resources
+Python Requests : *https://pypi.org/project/requests/*
+Documentation NewsAPI : *https://newsapi.org/docs*
