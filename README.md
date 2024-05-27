@@ -98,10 +98,27 @@ The server sends the authentication result to the client, which displays it. Sho
 
 
 
+### Acknowledgement
 
+I would like to express my heartfelt gratitude to out tutor for their invaluable guidance and support during this project. Their expertise and encouragement have been pivotal in its success. 
 
-### Acknowledgment
+Thank you for your dedication and inspiration.
+
+Sincerely,  
 ### Conclusion
+
+To sum up, working on this project has been a rewarding experience that has helped me grasp a variety of programming, networking, and application development ideas at a deeper level. I have learned useful lessons about developing scalable and effective systems by integrating client-server communication and external APIs.
+
+The project's goals, which included implementing news headline retrieval, identifying news sources, and user authentication, were all accomplished with success. Authentication is added to the services to improve security and guarantee that only authorized users may access them.
+
+I ran against obstacles during the development process that called for critical thinking and problem-solving abilities. But these obstacles were surmounted with persistence and help from peers and mentors, resulting in a strong and useful application.
+
+There is room for improvement in the future, including adding more functions, enhancing the user experience, and maximizing performance. This initiative has given rise to a strong base on which further advancements may be made.
+
+All things considered, I am happy with the results and appreciative of the educational possibilities this project has provided. It has been a fulfilling experience, and I'm eager to use the information and abilities I've acquired in my future software development ventures.
+
+
+
 ### Resources
 Python Requests : *{https://pypi.org/project/requests/}*
 Documentation NewsAPI : *{https://newsapi.org/docs}*
