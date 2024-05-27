@@ -18,6 +18,7 @@ Project was done using pure python, so to run this project. we are gonna need to
 
 In this project, we are going to use HTTP to send a GET request to newsAPI.org. to have the ability to do that we are gonna be needing to install **Requests**, which is a simple, yet elegant, HTTP library and to istall it using pip **:** *pip install requests*
 Required Dependancies: install requests
+install authentication
 
 ### How To:
 
