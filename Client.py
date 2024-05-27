@@ -22,8 +22,7 @@ def handle_headlines(client_socket):
         params['q'] = input("Enter keyword: ")
     elif choice == '2':
         print('1-Business\n2-Entertainment\n3-General\n4-Health\n5-Science\n6-Sports\n7-Technology')
-        categories = {'1': 'business', '2': 'entertainment', '3': 'general', '4': 'health', '5': 'science',
-                      '6': 'sports', '7': 'technology'}
+        categories = {'1': 'business', '2': 'entertainment', '3': 'general', '4': 'health', '5': 'science', '6': 'sports', '7': 'technology'}
         params['category'] = categories.get(input("Enter category number: "))
     elif choice == '3':
         print('1-au\n2-nz\n3-ca\n4-ae\n5-sa\n6-gb\n7-us\n8-eg\n9-ma')
@@ -49,7 +48,6 @@ def handle_headlines(client_socket):
                 if "Invalid article number" in response:
                     article_choice = input("")
                     client_socket.send(article_choice.encode())
-
 
 def handle_sources(client_socket):
     print("Sources Menu:")
@@ -107,16 +105,33 @@ def handle_sources(client_socket):
     client_socket.send(article_choice.encode())
     print(client_socket.recv(4096).decode())
 
-
-# Main client function
 def start_client():
     try:
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client_socket.connect((HOST, PORT))
 
-        client_name = input("Enter your name: ")
-        client_socket.send(client_name.encode())
+        # Receive and handle authentication messages
+        auth_successful = False
+        while not auth_successful:
+            auth_choice = input("Register (R) or Login (L): ").strip().upper()
+            client_socket.send(auth_choice.encode())
 
+            client_name = input("Enter username: ")
+            client_socket.send(client_name.encode())
+
+            client_password = input("Enter password: ")
+            client_socket.send(client_password.encode())
+
+            # Receive the server's response
+            response = client_socket.recv(4096).decode()
+            print(response)
+
+            if "successful" in response:
+                auth_successful = True
+            else:
+                print("Authentication failed. Please try again.")
+
+        # Proceed with main menu after successful authentication
         while True:
             choice = display_menu()
             if choice == '1':
@@ -137,6 +152,6 @@ def start_client():
     except Exception as e:
         print(f"An error occurred: {e}")
 
-
 if __name__ == "__main__":
     start_client()
+
